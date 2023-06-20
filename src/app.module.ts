@@ -1,13 +1,22 @@
 import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { UsersController } from './users/users.controller';
-import { UsersService } from './users/users.service';
-import { EmailService } from './email/email.service';
+import { UsersModule } from './users/users.module';
+import { ConfigModule } from '@nestjs/config/dist';
+import emailConfig from './config/emailConfig';
+import { validationSchema } from './config/validationSchema';
 
 @Module({
-  imports: [],
-  controllers: [AppController, UsersController],
-  providers: [AppService, UsersService, EmailService],
+  imports: [
+    UsersModule,
+    ConfigModule.forRoot({
+      envFilePath: [`${__dirname}/config/env/.development.env`],
+      load: [emailConfig],
+      isGlobal: true,
+      validationSchema,
+    }),
+  ],
+  controllers: [AppController],
+  providers: [AppService],
 })
 export class AppModule {}
